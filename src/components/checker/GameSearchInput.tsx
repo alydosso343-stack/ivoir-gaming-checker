@@ -1,59 +1,88 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Search, Loader2, Gamepad2 } from 'lucide-react'
 import { useCheckerStore, SelectedGame } from '@/store/useCheckerStore'
-import { Search } from 'lucide-react'
 
-interface GameSearchInputProps {
-  games?: SelectedGame[]
+interface Props {
+  onSelectGame?: (game: SelectedGame) => void
 }
 
-export default function GameSearchInput({ games = [] }: GameSearchInputProps) {
+export default function GameSearchInput({ onSelectGame }: Props) {
   const { selectedGame, setSelectedGame } = useCheckerStore()
-  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState<SelectedGame[]>([])
+  const [loading, setLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
-    setSearchTerm(selectedGame?.title ?? '')
+    if (selectedGame) {
+      setQuery(selectedGame.name)
+    }
   }, [selectedGame])
 
-  const filteredGames = games.filter((game) =>
-    game.title.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  useEffect(() => {
+    if (query.trim().length < 2) {
+      setResults([])
+      setIsOpen(false)
+      return
+    }
+
+    const searchGames = async () => {
+      setLoading(true)
+      try {
+        const res = await fetch(`/api/games/search?q=${encodeURIComponent(query)}`)
+        const data = await res.json()
+        setResults(Array.isArray(data) ? data : [])
+        setIsOpen(true)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    const timer = setTimeout(searchGames, 300)
+    return () => clearTimeout(timer)
+  }, [query])
+
+  const handleSelect = (game: SelectedGame) => {
+    setSelectedGame(game)
+    if (onSelectGame) onSelectGame(game)
+    setQuery(game.name)
+    setIsOpen(false)
+  }
 
   return (
     <div className="relative w-full">
-      <div className="relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+      <div className="relative flex items-center">
+        <Search className="absolute left-3.5 w-4 h-4 text-cyan-400 pointer-events-none" />
         <input
           type="text"
-          value={searchTerm}
+          value={query}
           onChange={(e) => {
-            setSearchTerm(e.target.value)
-            setIsOpen(true)
+            setQuery(e.target.value)
+            if (!e.target.value) setSelectedGame(null)
           }}
-          onFocus={() => setIsOpen(true)}
-          placeholder="Rechercher un jeu..."
-          className="w-full bg-slate-900/80 border border-slate-700/60 rounded-xl pl-12 pr-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500/50 transition"
+          placeholder="Rechercher un jeu (ex: GTA V, FIFA, Fortnite...)"
+          className="w-full bg-gray-900 border border-gray-800 text-white placeholder-gray-500 text-xs rounded-xl pl-10 pr-10 py-3 focus:outline-none focus:border-cyan-500 transition-all"
         />
+        {loading && <Loader2 className="absolute right-3.5 w-4 h-4 animate-spin text-cyan-400" />}
       </div>
 
-      {isOpen && searchTerm && filteredGames.length > 0 && (
-        <ul className="absolute z-50 w-full mt-2 bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl max-h-60 overflow-y-auto">
-          {filteredGames.map((game) => (
-            <li
-              key={game.id.toString()}
-              onClick={() => {
-                setSelectedGame(game)
-                setSearchTerm(game.title)
-                setIsOpen(false)
-              }}
-              className="px-4 py-3 hover:bg-slate-800 cursor-pointer text-sm text-gray-200 transition flex items-center justify-between"
+      {isOpen && results.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-gray-950 border border-gray-800 rounded-xl shadow-2xl z-50 max-h-60 overflow-y-auto divide-y divide-gray-900">
+          {results.map((game) => (
+            <button
+              key={game.id}
+              onClick={() => handleSelect(game)}
+              className="w-full text-left px-4 py-2.5 text-xs text-gray-200 hover:bg-cyan-950/50 hover:text-cyan-400 flex items-center gap-2 transition-colors"
             >
-              <span>{game.title}</span>
-            </li>
+              <Gamepad2 className="w-3.5 h-3.5 text-cyan-500 flex-shrink-0" />
+              <span className="truncate font-semibold">{game.name}</span>
+            </button>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   )
