@@ -1,31 +1,52 @@
 import { NextResponse } from 'next/server'
+import { CATALOG_50_GAMES } from '@/components/checker/WeeklyTop'
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const query = searchParams.get('q')
 
-  if (!query || query.length < 2) {
+  if (!query || query.trim().length < 2) {
     return NextResponse.json([])
   }
 
+  const cleanQuery = query.toLowerCase().trim()
+
+  // 1. Chercher dans notre base locale de 50+ jeux
+  const localMatches = CATALOG_50_GAMES.filter((g) =>
+    g.name.toLowerCase().includes(cleanQuery)
+  ).map((g) => ({
+    id: g.id,
+    name: g.name,
+    header_image: g.image,
+  }))
+
   try {
+    // 2. Chercher en parallèle sur Steam
     const res = await fetch(
-      `https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(
-        query
-      )}&l=french&cc=CI`
+      `https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(query)}&l=french&cc=US`
     )
     const data = await res.json()
 
-    const games = (data.items || []).map((item: any) => ({
-      id: item.id,
-      title: item.name,
-      slug: item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      headerImage: `https://cdn.akamai.steamstatic.com/steam/apps/${item.id}/header.jpg`,
-    }))
+    let steamMatches: any[] = []
+    if (data && data.items) {
+      steamMatches = data.items.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        header_image: `https://cdn.akamai.steamstatic.com/steam/apps/${item.id}/header.jpg`,
+      }))
+    }
 
-    return NextResponse.json(games)
+    // 3. Fusionner les résultats sans doublons
+    const combined = [...localMatches]
+    for (const item of steamMatches) {
+      if (!combined.some((g) => g.id === item.id)) {
+        combined.push(item)
+      }
+    }
+
+    return NextResponse.json(combined)
   } catch (error) {
     console.error('Erreur API Steam:', error)
-    return NextResponse.json({ error: 'Erreur recherche Steam' }, { status: 500 })
+    return NextResponse.json(localMatches)
   }
 }
