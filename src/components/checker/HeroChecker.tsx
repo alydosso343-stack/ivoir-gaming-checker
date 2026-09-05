@@ -1,121 +1,104 @@
 'use client'
 
 import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { Gamepad2, Zap, Loader2, Sparkles, RefreshCw } from 'lucide-react'
 import { useCheckerStore } from '@/store/useCheckerStore'
 import GameSearchInput from './GameSearchInput'
-import { Search, Cpu, Loader2, Sparkles } from 'lucide-react'
-
-const HARDWARE_PRESETS = [
-  'Intel HD 520',
-  'Intel UHD 620',
-  'GT 710',
-  'GTX 750 Ti',
-  'GTX 1050',
-]
+import HardwareSelector from './HardwareSelector'
 
 export default function HeroChecker() {
-  const [rawInput, setRawInput] = useState<string>('')
-  const [selectedGameSlug, setSelectedGameSlug] = useState<string>('gta-v')
-  const { setGpu, setSelectedGame, setIsLoading, isLoading, setResult } = useCheckerStore()
+  const [isLoading, setIsLoading] = useState(false)
+  const { selectedGame, cpu, gpu, ram, setResult } = useCheckerStore()
 
-  const handleSelectGame = (gameTitle: string, gameSlug: string) => {
-    setSelectedGameSlug(gameSlug)
-    setSelectedGame(gameSlug)
-  }
-
-  const handleAnalyze = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!rawInput?.trim()) return
-
+  const handleCheck = async () => {
+    if (!selectedGame || (!cpu && !gpu)) return
     setIsLoading(true)
-    setGpu(rawInput)
+
+    const fullSpecs = `CPU: ${cpu || 'Non spécifié'}, GPU: ${gpu || 'Graphiques intégrés'}, RAM: ${ram}`
 
     try {
       const res = await fetch('/api/check', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rawInput, gameSlug: selectedGameSlug }),
+        body: JSON.stringify({
+          rawInput: fullSpecs,
+          gameSlug: selectedGame.name,
+        }),
       })
       const data = await res.json()
       setResult(data)
     } catch (err) {
-      console.error('Erreur lors de l’analyse :', err)
+      console.error(err)
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <section className="w-full max-w-4xl mx-auto py-12 px-4">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-extrabold text-white mb-4">
-          Ton PC peut-il tourner <span className="text-green-500">ton jeu préféré</span> ?
-        </h1>
-        <p className="text-gray-400">
-          Analyse instantanée optimisée pour les configurations PC courantes en Côte d&apos;Ivoire.
-        </p>
-      </div>
+    <section className="relative w-full min-h-[580px] flex items-center justify-center overflow-hidden py-10 px-4">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-950/50 via-black to-black" />
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-cyan-500/10 blur-[130px] pointer-events-none rounded-full" />
 
-      <form onSubmit={handleAnalyze} className="bg-gray-900/90 border border-gray-800 p-6 rounded-2xl shadow-2xl backdrop-blur-sm space-y-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <GameSearchInput onSelectGame={handleSelectGame} />
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-              <Cpu className="w-4 h-4 text-green-500" />
-              Ta configuration (GPU / CPU / RAM)
-            </label>
-            <input
-              type="text"
-              placeholder="Ex: Intel UHD 620, Core i5 8è gen"
-              value={rawInput}
-              onChange={(e) => setRawInput(e.target.value)}
-              className="w-full bg-gray-800/80 border border-gray-700 text-white rounded-xl p-3 focus:outline-none focus:border-green-500 transition placeholder-gray-500"
-            />
-          </div>
-        </div>
-
-        {/* Boutons de raccourcis rapides GPU */}
-        <div className="space-y-2">
-          <p className="text-xs text-gray-400 flex items-center gap-1 font-medium">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" /> Raccourcis fréquents à Abidjan :
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {HARDWARE_PRESETS.map((preset) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => setRawInput(preset)}
-                className={`text-xs px-3 py-1.5 rounded-lg border transition cursor-pointer font-medium ${
-                  rawInput === preset
-                    ? 'bg-green-500/20 text-green-400 border-green-500/50'
-                    : 'bg-gray-800/60 text-gray-300 border-gray-700 hover:border-gray-500 hover:text-white'
-                }`}
-              >
-                + {preset}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading || !(rawInput ?? '').trim()}
-          className="w-full py-4 bg-green-600 hover:bg-green-500 disabled:bg-gray-800 disabled:cursor-not-allowed text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-green-600/20 cursor-pointer"
+      <div className="relative z-10 max-w-5xl w-full mx-auto text-center space-y-6">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 text-xs font-bold uppercase tracking-widest shadow-inner"
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Analyse en cours...
-            </>
-          ) : (
-            <>
-              <Search className="w-5 h-5" />
-              Vérifier la compatibilité
-            </>
-          )}
-        </button>
-      </form>
+          <Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+          Moteur Diagnostic IA Llama 3.1
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-3xl md:text-5xl font-black text-white tracking-tight uppercase"
+        >
+          Vérifie la compatibilité PC de <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-400">
+            Tes Jeux Préférés
+          </span>
+        </motion.h1>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+          className="bg-gray-950/90 border border-cyan-500/20 backdrop-blur-2xl p-6 rounded-3xl shadow-2xl shadow-cyan-950/60 max-w-4xl mx-auto space-y-5"
+        >
+          {/* Étape 1 : Choisir le Jeu */}
+          <div className="space-y-1.5 text-left">
+            <label className="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2">
+              <Gamepad2 className="w-4 h-4" /> 1. Recherche ou Sélectionne un Jeu
+            </label>
+            <GameSearchInput />
+          </div>
+
+          {/* Étape 2 : Sélecteurs de Matériel */}
+          <HardwareSelector />
+
+          {/* Bouton de Validation */}
+          <button
+            onClick={handleCheck}
+            disabled={isLoading || !selectedGame || (!cpu && !gpu)}
+            className="w-full py-4 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 text-black font-black uppercase tracking-wider text-xs md:text-sm hover:brightness-125 transition-all shadow-lg shadow-cyan-500/20 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-black" />
+                Analyse de compatibilité en cours...
+              </>
+            ) : (
+              <>
+                <Zap className="w-4 h-4 fill-black" />
+                Lancer le Test de Compatibilité
+              </>
+            )}
+          </button>
+        </motion.div>
+      </div>
     </section>
   )
 }

@@ -1,54 +1,41 @@
 import { create } from 'zustand'
 
+export interface SelectedGame {
+  id: number | string
+  name: string
+  header_image?: string
+}
+
 export interface CheckResult {
   canRun: boolean
-  fpsAvg: number
-  setting: string
-  notes?: string
-  youtubeUrl?: string
-  isAiFallback?: boolean
-  gameTitle?: string
+  fpsEstimate: string
+  verdict: string
+  explanation: string
+  recommendations: string[]
 }
 
 interface CheckerState {
-  gpu: string
+  selectedGame: SelectedGame | null
   cpu: string
-  ram: number
-  selectedGame: string
-  isLoading: boolean
+  gpu: string
+  ram: string
   result: CheckResult | null
-  
-  // Actions
-  setGpu: (gpu: string) => void
+  setSelectedGame: (game: SelectedGame | null) => void
   setCpu: (cpu: string) => void
-  setRam: (ram: number) => void
-  setSelectedGame: (game: string) => void
-  setIsLoading: (loading: boolean) => void
+  setGpu: (gpu: string) => void
+  setRam: (ram: string) => void
   setResult: (result: CheckResult | null) => void
-  reset: () => void
 }
 
 export const useCheckerStore = create<CheckerState>((set) => ({
-  gpu: '',
+  selectedGame: null,
   cpu: '',
-  ram: 8,
-  selectedGame: 'gta-v',
-  isLoading: false,
+  gpu: '',
+  ram: '8 Go',
   result: null,
-
-  setGpu: (gpu) => set({ gpu }),
+  setSelectedGame: (game) => set({ selectedGame: game }),
   setCpu: (cpu) => set({ cpu }),
+  setGpu: (gpu) => set({ gpu }),
   setRam: (ram) => set({ ram }),
-  setSelectedGame: (selectedGame) => set({ selectedGame }),
-  setIsLoading: (isLoading) => set({ isLoading }),
   setResult: (result) => set({ result }),
-  reset: () =>
-    set({
-      gpu: '',
-      cpu: '',
-      ram: 8,
-      selectedGame: 'gta-v',
-      result: null,
-      isLoading: false,
-    }),
 }))

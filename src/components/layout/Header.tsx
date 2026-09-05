@@ -1,32 +1,41 @@
 'use client'
 
 import Link from 'next/link'
-import { Gamepad2, Zap } from 'lucide-react'
-import GoogleAuthBtn from '@/components/auth/GoogleAuthBtn'
+import { Gamepad2, Sparkles, User } from 'lucide-react'
+import GoogleAuthBtn from '../auth/GoogleAuthBtn'
 
 export default function Header() {
   return (
-    <header className="w-full border-b border-gray-800/80 bg-black/60 backdrop-blur-md sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="p-2 bg-green-500/10 border border-green-500/30 rounded-xl group-hover:border-green-500/60 transition shadow-lg shadow-green-500/5">
-            <Gamepad2 className="w-6 h-6 text-green-400" />
+    <header className="sticky top-0 z-50 w-full border-b border-cyan-500/10 bg-black/80 backdrop-blur-xl">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="relative p-2 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-500/40 transition-all">
+            <Gamepad2 className="w-6 h-6 text-black font-extrabold" />
           </div>
-          <div>
-            <span className="font-extrabold text-lg text-white tracking-wide">
-              IVOIR<span className="text-green-500">GAMING</span>
+          <div className="flex flex-col">
+            <span className="font-black text-lg tracking-wider text-white flex items-center gap-1.5">
+              IVOIR<span className="text-cyan-400">GAMING</span>
             </span>
-            <span className="ml-2 text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 px-1.5 py-0.5 rounded-md">
-              CI 🇨🇮
+            <span className="text-[10px] uppercase font-semibold tracking-widest text-gray-400 -mt-1">
+              Checker 🇨🇮
             </span>
           </div>
         </Link>
 
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-2 text-xs text-gray-400 bg-gray-900/80 px-3 py-1.5 rounded-full border border-gray-800">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <Zap className="w-3.5 h-3.5 text-amber-400" /> Groq IA
-          </div>
+        <nav className="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-wider text-gray-400">
+          <Link href="/" className="text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5" /> Benchmark IA
+          </Link>
+
+          <a href="#trending" className="hover:text-white transition-colors">
+            Top Jeux CI
+          </a>
+          <a href="#about" className="hover:text-white transition-colors">
+            Vision
+          </a>
+        </nav>
+
+        <div className="flex items-center gap-3">
           <GoogleAuthBtn />
         </div>
       </div>
