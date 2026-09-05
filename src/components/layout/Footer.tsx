@@ -1,24 +1,22 @@
-'use client'
+﻿'use client'
 
-import { Gamepad2, Heart } from 'lucide-react'
+import { Heart, Gamepad2 } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t border-gray-800 bg-black py-8 text-gray-400 text-sm mt-auto">
-      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+    <footer className="border-t border-gray-800 bg-gray-950/80 py-8 mt-16">
+      <div className="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center text-center space-y-3">
         <div className="flex items-center gap-2">
-          <Gamepad2 className="w-5 h-5 text-green-500" />
-          <span className="font-bold text-white tracking-wide">
-            IVOIR GAMING CHECKER
+          <Gamepad2 className="w-5 h-5 text-cyan-400" />
+          <span className="font-extrabold text-white text-sm tracking-wider">
+            IVOIR<span className="text-cyan-400">GAMING</span> CHECKER
           </span>
         </div>
-
-        <p className="flex items-center gap-1 text-xs text-gray-500">
-          Fait avec <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500" /> pour les gamers de Côte d&apos;Ivoire 🇨🇮
+        <p className="text-xs text-gray-400 flex items-center gap-1">
+          Fait avec <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 inline" /> pour les gamers de Côte d'Ivoire 🇨🇮
         </p>
-
-        <p className="text-xs text-gray-600">
-          &copy; {new Date().getFullYear()} - Tous droits réservés.
+        <p className="text-[10px] text-gray-600 font-mono">
+          © 2026 IVOIRGAMING CI - Tous droits réservés.
         </p>
       </div>
     </footer>
