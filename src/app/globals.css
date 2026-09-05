@@ -1,3 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+nextjs-portal, #nextjs-dev-tools {
+  display: none !important;
+}
