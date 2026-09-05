@@ -1,15 +1,19 @@
+import Header from '@/components/layout/Header'
 import HeroChecker from '@/components/checker/HeroChecker'
 import ResultCard from '@/components/checker/ResultCard'
-import SteamCatalog from '@/components/checker/SteamCatalog'
-import AboutVision from '@/components/sections/AboutVision'
+import WeeklyTop from '@/components/checker/WeeklyTop'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-black text-white space-y-8 pb-16">
-      <HeroChecker />
+    <main className="min-h-screen bg-gray-950 text-white selection:bg-cyan-500 selection:text-black">
+      <Header />
+      <div id="checker">
+        <HeroChecker />
+      </div>
       <ResultCard />
-      <SteamCatalog />
-      <AboutVision />
+      <div id="trending">
+        <WeeklyTop />
+      </div>
     </main>
   )
 }

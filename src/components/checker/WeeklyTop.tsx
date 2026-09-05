@@ -76,7 +76,7 @@ export default function WeeklyTop() {
 
   return (
     <section id="trending" className="max-w-7xl mx-auto px-4 py-12 space-y-8">
-      {/* Header Section */}
+      {/* En-tête de section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-800 pb-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-cyan-500/10 border border-cyan-500/20 rounded-xl text-cyan-400">
@@ -92,12 +92,12 @@ export default function WeeklyTop() {
           </div>
         </div>
 
-        {/* Rapid Search Bar inside Catalogue */}
+        {/* Barre de recherche dans le catalogue */}
         <div className="relative w-full md:w-72">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-400" />
           <input
             type="text"
-            placeholder="Filtrer parmi les 50+ jeux..."
+            placeholder="Filtrer les 50+ jeux..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-gray-900 border border-gray-800 text-white text-xs rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-cyan-500 transition-all"
@@ -105,7 +105,7 @@ export default function WeeklyTop() {
         </div>
       </div>
 
-      {/* Filter Tabs */}
+      {/* Onglets de filtres */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
         <Filter className="w-4 h-4 text-gray-500 flex-shrink-0 mr-1" />
         {categories.map((cat) => (
@@ -126,7 +126,7 @@ export default function WeeklyTop() {
         ))}
       </div>
 
-      {/* Games Grid */}
+      {/* Grille des jeux */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredGames.slice(0, visibleCount).map((game) => (
           <motion.div
@@ -173,7 +173,7 @@ export default function WeeklyTop() {
         ))}
       </div>
 
-      {/* Load More Button */}
+      {/* Bouton Charger Plus */}
       {visibleCount < filteredGames.length && (
         <div className="text-center pt-6">
           <button

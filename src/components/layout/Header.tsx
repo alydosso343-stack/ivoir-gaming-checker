@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Gamepad2, Menu, X, Flame, Cpu, HelpCircle, Search } from 'lucide-react'
+import { Gamepad2, Menu, X, Flame, Cpu, Search } from 'lucide-react'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -35,7 +35,7 @@ export default function Header() {
           </div>
         </button>
 
-        {/* Desktop Navigation Links */}
+        {/* Navigation Bureau */}
         <nav className="hidden md:flex items-center gap-1 bg-gray-900/60 p-1.5 rounded-2xl border border-gray-800">
           <button
             onClick={() => scrollToSection('checker')}
@@ -57,7 +57,7 @@ export default function Header() {
           </button>
         </nav>
 
-        {/* Mobile Toggle Button */}
+        {/* Bouton Hamburger Mobile */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="md:hidden p-2.5 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 hover:text-white transition-colors"
@@ -67,7 +67,7 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Mobile Drawer (Volet déroulant Mobile) */}
+      {/* Menu Mobile Déroulant */}
       {isMenuOpen && (
         <div className="md:hidden bg-gray-950/95 border-b border-gray-800 px-4 py-4 space-y-2 backdrop-blur-2xl animate-in slide-in-from-top duration-200">
           <button

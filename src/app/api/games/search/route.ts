@@ -11,7 +11,7 @@ export async function GET(request: Request) {
 
   const cleanQuery = query.toLowerCase().trim()
 
-  // 1. Chercher dans notre base locale de 50+ jeux
+  // 1. Recherche dans le catalogue local (50+ jeux)
   const localMatches = CATALOG_50_GAMES.filter((g) =>
     g.name.toLowerCase().includes(cleanQuery)
   ).map((g) => ({
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
   }))
 
   try {
-    // 2. Chercher en parallèle sur Steam
+    // 2. Recherche en direct sur l'API de Steam
     const res = await fetch(
       `https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(query)}&l=french&cc=US`
     )
@@ -36,7 +36,7 @@ export async function GET(request: Request) {
       }))
     }
 
-    // 3. Fusionner les résultats sans doublons
+    // 3. Fusion unique des résultats
     const combined = [...localMatches]
     for (const item of steamMatches) {
       if (!combined.some((g) => g.id === item.id)) {
